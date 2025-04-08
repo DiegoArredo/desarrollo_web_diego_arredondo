@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informar Actividad</title>
+    <link rel="stylesheet" href="styles/modal.css">
 </head>
 <body>
-    <form action="#" method="post">
+    <a href="index.html">Volver a la portada</a>
+    <div id="val-box" hidden>
+        <h2 id="val-msg"></h2>
+        <ul id="val-list"></ul>
+    </div>
+    <form action="#" method="post" id="actividad-form">
         <h3>Información de lugar</h3>
         <label for="region">Región:</label>
         <!-- REGION -->
@@ -35,15 +41,15 @@
         <input type="tel" id="numero" name="numero" required>
         <br><br>
         <p>Contactar por:</p>
-        <input type="checkbox" name="whatsapp" onclick="revisaCheck(this);"> Whatsapp <br>
+        <input id="chk-whatsapp" type="checkbox" name="whatsapp" onclick="revisaCheck(this);"> Whatsapp <br>
         <input  id="whatsapp" type="text" name="whatsapp-id" style="display:none;"> 
-        <input  type="checkbox" name="instagram" onclick="revisaCheck(this);"> Instagram<br>
+        <input id="chk-instagram" type="checkbox" name="instagram" onclick="revisaCheck(this);"> Instagram<br>
         <input id="instagram" type="text" name="instagram-id" style="display:none;">
-        <input  type="checkbox" name="telegram" onclick="revisaCheck(this);"> Telegram<br>
+        <input id="chk-telegram" type="checkbox" name="telegram" onclick="revisaCheck(this);"> Telegram<br>
         <input id="telegram" type="text" name="telegram-id" style="display:none;">
-        <input  type="checkbox" name="x" onclick="revisaCheck(this);"> X<br>
+        <input id="chk-x" type="checkbox" name="x" onclick="revisaCheck(this);"> X<br>
         <input id="x" type="text" name="x-id" style="display:none;">
-        <input  type="checkbox" name="tiktok" onclick="revisaCheck(this);"> TikTok<br>
+        <input id="chk-tiktok" type="checkbox" name="tiktok" onclick="revisaCheck(this);"> TikTok<br>
         <input id="tiktok" type="text" name="tiktok-id" style="display:none;">
         <br><br>
         <h3>Información de la Actividad</h3>
@@ -83,12 +89,30 @@
         
 
         <br><br>
-        <button  onclick="">Agregar esta actividad</button>
+        <button type="button" id="myBtn">Agregar esta actividad</button>
     </form>
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <p> “¿Está seguro que desea agregar esta
+            actividad?”</p>
+          <button id="submit-btn" onclick="validateForm()">Si, estoy seguro!</button>
+          <button onclick="cerrarModal()">No, no estoy seguro, quiero volver al formulario!</button>
+        </div>
+      
+    </div>
 </body>
 <script src="js/region_comuna.js"></script>
 <script src="js/datetime.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/validator.js"></script>
 <script>
+    function cerrarModal() {
+        const modal = document.getElementById("myModal");
+        modal.style.display = "none";
+    };
     function revisaCheck(element){
  if (element.checked) {
    document.getElementById(element.name).style.display = "block";
