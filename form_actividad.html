@@ -8,25 +8,23 @@
 <body>
     <form action="#" method="post">
         <h3>Información de lugar</h3>
-        <!-- Region(menu seleccion),Comuna,Sector -->
         <label for="region">Región:</label>
+        <!-- REGION -->
         <select id="region" name="region">
-            <option value="region1">Región 1</option>
-            <option value="region2">Región 2</option>
-            <option value="region3">Región 3</option>
-            <option value="region4">Región 4</option>
-            <option value="region5">Región 5</option>
+            <option value="">Seleccione una región</option>
         </select>
         <br><br>
+        <!-- COMUNA -->
         <label for="comuna">Comuna:</label>
-        <input type="text" id="comuna" name="comuna" required>
+        <select id="comuna" name="comuna" required></select>
         <br><br>
+        <!-- SECTOR -->
         <label for="sector">Sector:</label>
         <input type="text" id="sector" name="sector" required>
         <br><br>
 
         <h3>Datos del organizador</h3>
-        <!-- Nombre,email,numero celular, contactar por(menu selecion rrss) -->
+
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required>
         <br><br>
@@ -36,41 +34,112 @@
         <label for="numero">Número celular:</label>
         <input type="tel" id="numero" name="numero" required>
         <br><br>
-        <label for="contactar">Contactar por:</label>
-        <select id="contactar" name="contactar">
-            <option value="whatsapp">WhatsApp</option>
-            <option value="email">Email</option>
-            <option value="telefono">Teléfono</option>
-            <option value="rrss">Redes Sociales</option>
-        </select>
+        <p>Contactar por:</p>
+        <input type="checkbox" name="whatsapp" onclick="revisaCheck(this);"> Whatsapp <br>
+        <input  id="whatsapp" type="text" name="whatsapp-id" style="display:none;"> 
+        <input  type="checkbox" name="instagram" onclick="revisaCheck(this);"> Instagram<br>
+        <input id="instagram" type="text" name="instagram-id" style="display:none;">
+        <input  type="checkbox" name="telegram" onclick="revisaCheck(this);"> Telegram<br>
+        <input id="telegram" type="text" name="telegram-id" style="display:none;">
+        <input  type="checkbox" name="x" onclick="revisaCheck(this);"> X<br>
+        <input id="x" type="text" name="x-id" style="display:none;">
+        <input  type="checkbox" name="tiktok" onclick="revisaCheck(this);"> TikTok<br>
+        <input id="tiktok" type="text" name="tiktok-id" style="display:none;">
         <br><br>
         <h3>Información de la Actividad</h3>
         <!-- dia hora inicio y fin, descripcion,tema y foto -->
         <label for="hora_inicio">Fecha de inicio:</label>
-        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
-        <input type="time" id="hora_inicio" name="hora_inicio" required>
+        <input type="datetime-local" id="fecha_inicio" name="fecha_inicio"  required>
         <br><br>
         <label for="hora_fin">Fecha de fin:</label>
-        <input type="date" id="fecha_fin" name="fecha_fin" required>
-        <input type="time" id="hora_fin" name="hora_fin" required>
+        <input type="datetime-local" id="fecha_fin" name="fecha_fin" required>
         <br><br>
-        <label for="descripcion">Descripción:</label>
+        <label for="descripcion">Descripción:</label> <br>
         <textarea id="descripcion" name="descripcion" rows="10" cols="50" required></textarea>
         <br><br>
         <label for="tema">Tema:</label>
         <select id="tema" name="tema">
-            <option value="tema1">Tema 1</option>
-            <option value="tema2">Tema 2</option>
-            <option value="tema3">Tema 3</option>
-            <option value="tema4">Tema 4</option>
-            <option value="tema5">Tema 5</option>
+            <option value="">Seleccione un tema</option>
+            <option value="musica">Música</option>
+            <option value="deporte">Deporte</option>
+            <option value="ciencias">Ciencias</option>
+            <option value="religion">Religión</option>
+            <option value="politica">Política</option>
+            <option value="tecnologia">Tecnología</option>
+            <option value="juegos">Juegos</option>
+            <option value="baile">Baile</option>
+            <option value="comida">Comida</option>
+            <option value="otro" >Otro</option>
         </select>
-        <br><br>
-        <label for="foto">Foto:</label>
-        <input type="file" id="foto" name="foto" accept="image/*" required>
+        <input type="text" name="tema" id="otro_tema" style="display:none;" placeholder="Especifique otro tema">
         <br><br>
 
+        <div id="foto-container">
+            <label for="foto">Foto:</label>
+            <input type="file" id="foto" name="foto" accept="image/*" required>
+        </div>
+        <button type="button" id="btn-agregar-foto" onclick="agregarFoto()">Agregar otra foto</button>
+        <button type="button" id="btn-quitar-foto" onclick="quitarFoto()" disabled>Quitar Foto</button>
+        
 
+        <br><br>
+        <button  onclick="">Agregar esta actividad</button>
     </form>
 </body>
+<script src="js/region_comuna.js"></script>
+<script src="js/datetime.js"></script>
+<script>
+    function revisaCheck(element){
+ if (element.checked) {
+   document.getElementById(element.name).style.display = "block";
+ } else {
+    document.getElementById(element.name).style.display = "none";
+ }
+ }
+ 
+    function checkTema() {
+        const temaSelect = document.getElementById('tema');
+        const otroTemaOption = document.getElementById('otro_tema');
+        if (temaSelect.value === 'otro') {
+            otroTemaOption.style.display = 'block';
+        } else {
+            otroTemaOption.style.display = 'none';
+        }
+    }
+
+    document.getElementById('tema').addEventListener('change', checkTema);
+
+    function agregarFoto() {
+        const fotoContainer = document.getElementById('foto-container');
+        const newInput = document.createElement('input');
+        const quitarFotoBtn = document.getElementById('btn-quitar-foto');
+        newInput.type = 'file';
+        newInput.name = 'foto';
+        newInput.accept = 'image/*';
+        newInput.required = true; // Cambia a false si no es necesario
+        if (fotoContainer.childElementCount > 1 && fotoContainer.childElementCount < 6) {
+            const quitarFotoBtn = document.getElementById('btn-quitar-foto');
+            quitarFotoBtn.disabled = false; // Habilitar el botón de quitar foto
+            fotoContainer.appendChild(newInput);
+        }else if (fotoContainer.childElementCount == 6) {
+            alert("No puedes agregar más de 5 fotos.");
+             // Quitar el nuevo input si se excede el límite
+            return;
+
+        }
+
+
+    }
+
+    function quitarFoto() {
+        const fotoContainer = document.getElementById('foto-container');
+        if (fotoContainer.childElementCount > 2) {
+            fotoContainer.removeChild(fotoContainer.lastChild); // Quitar la última foto
+        }
+        if (fotoContainer.childElementCount == 2) {
+            const quitarFotoBtn = document.getElementById('btn-quitar-foto');
+            quitarFotoBtn.disabled = true; // Deshabilitar el botón de quitar foto si no hay más fotos
+        }
+    }
+</script>
 </html>
