@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Actividades</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+    <a href="index.html">Volver a la portada</a>
     <!-- tabla con columnas: inicio,termino,comuna,sector,tema,nombre organizador y total de fotos -->
     <h1>Listado de Actividades</h1>
     <table>
@@ -21,50 +22,51 @@
         </tr>
         <!-- Aquí se agregarían las filas con los datos de las actividades -->
         <!-- Ejemplo de fila: -->
-        <tr>
-            <td>2023-10-01 10:00</td>
-            <td>2023-10-01 12:00</td>
+        <tr class="actividad" onclick="location.href='templates/actividad1.html'">
+            <td>2025-03-28</td>
+            <td>2025-04-28</td>
             <td>Santiago</td>
-            <td>Centro</td>
-            <td>Medio Ambiente</td>
+            <td>Beucheff</td>
+            <td>Escuela boxeo</td>
             <td>Juan Pérez</td>
-            <td>5</td>
-        </tr>
-        <tr>
-            <td>2023-10-02 14:00</td>
-            <td>2023-10-02 16:00</td>
-            <td>Valparaíso</td>
-            <td>Playa</td>
-            <td>Deportes</td>
-            <td>María López</td>
-            <td>3</td>
-        </tr>
-        <tr>
-            <td>2023-10-03 09:00</td>
-            <td>2023-10-03 11:00</td>
-            <td>Concepción</td>
-            <td>Centro</td>
-            <td>Cultura</td>
-            <td>Carlos González</td>
-            <td>8</td>
-        </tr>
-        <tr>
-            <td>2023-10-04 15:00</td>
-            <td>2023-10-04 17:00</td>
-            <td>La Serena</td>
-            <td>Playa</td>
-            <td>Turismo</td>
-            <td>Ana Torres</td>
             <td>2</td>
         </tr>
-        <tr>
-            <td>2023-10-05 18:00</td>
-            <td>2023-10-05 20:00</td>
-            <td>Punta Arenas</td>
-            <td>Centro</td>
-            <td>Historia</td>
-            <td>Pedro Martínez</td>
-            <td>4</td>
+        <tr    class="actividad" onclick="location.href='templates/actividad2.html'">
+            <td>2025-04-18</td>
+            <td>2025-05-08</td>
+            <td>La Serena</td>
+            <td>Cendyr</td>
+            <td>Volleyball</td>
+            <td>Juan Stay</td>
+            <td>1</td>
+        </tr>
+        <tr class="actividad" onclick="location.href='templates/actividad4.html'">
+            <td>2025-05-18</td>
+            <td>2025-06-08</td>
+            <td>Valparaíso</td>
+            <td>Playa el sol</td>
+            <td>Surf</td>
+            <td>Valeria Gonzales</td>
+            <td>2</td>
+        </tr>
+        <tr class="actividad" onclick="location.href='templates/actividad5.html'">
+            <td>2025-06-18</td>
+            <td>2025-07-08</td>
+            <td>Concepción</td>
+            <td>Playa Ancha</td>
+            <td>Futbol Playa</td>
+            <td>Juan Pérez</td>
+            <td>2</td>
+        </tr>
+
+        <tr class="actividad" onclick="location.href='templates/actividad3.html'">
+            <td>2025-08-18</td>
+            <td>2025-09-08</td>
+            <td>La Serena</td>
+            <td>Playa Peñuelas</td>
+            <td>Kyak</td>
+            <td>Juan Stay</td>
+            <td>1</td>
         </tr>
     </table>
 </body>
