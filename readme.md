@@ -1,4 +1,7 @@
+## Link (Github Pages): https://diegoarredo.github.io/desarrollo_web_diego_arredondo/
+
 ## Tarea 1
+
 Consideracion. NO se dedico tiempo a mejorar los estilos.
 -Cada vista permite volver a la portada
 ### Vistas: 
