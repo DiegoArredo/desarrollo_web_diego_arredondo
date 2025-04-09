@@ -10,7 +10,7 @@
 <body>
     <a href="index.html">Volver a la portada</a>
     <div id="val-box" hidden>
-        <h2 id="val-msg"></h2>
+        <h2 id="val-msg">°</h2>
         <ul id="val-list"></ul>
     </div>
     <form action="index.html" method="post" id="actividad-form">
@@ -23,7 +23,9 @@
         <br><br>
         <!-- COMUNA -->
         <label for="comuna">Comuna:</label>
-        <select id="comuna" name="comuna" required></select>
+        <select id="comuna" name="comuna" required>
+            <option value="">Seleccione una comuna</option>
+        </select>
         <br><br>
         <!-- SECTOR -->
         <label for="sector">Sector:</label>
@@ -55,10 +57,10 @@
         <br><br>
         <h3>Información de la Actividad</h3>
         <!-- dia hora inicio y fin, descripcion,tema y foto -->
-        <label for="hora_inicio">Fecha de inicio:</label>
+        <label for="fecha_inicio">Fecha de inicio:</label>
         <input type="datetime-local" id="fecha_inicio" name="fecha_inicio"  required>
         <br><br>
-        <label for="hora_fin">Fecha de fin:</label>
+        <label for="fecha_fin">Fecha de fin:</label>
         <input type="datetime-local" id="fecha_fin" name="fecha_fin" required>
         <br><br>
         <label for="descripcion">Descripción:</label> <br>
@@ -104,67 +106,67 @@
         </div>
       
     </div>
+    <script src="js/region_comuna.js"></script>
+    <script src="js/datetime.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/validator.js"></script>
+    <script>
+        function cerrarModal() {
+            const modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        };
+        function revisaCheck(element){
+     if (element.checked) {
+       document.getElementById(element.name).style.display = "block";
+     } else {
+        document.getElementById(element.name).style.display = "none";
+     }
+     }
+     
+        function checkTema() {
+            const temaSelect = document.getElementById('tema');
+            const otroTemaOption = document.getElementById('otro_tema');
+            if (temaSelect.value === 'otro') {
+                otroTemaOption.style.display = 'block';
+            } else {
+                otroTemaOption.style.display = 'none';
+            }
+        }
+    
+        document.getElementById('tema').addEventListener('change', checkTema);
+    
+        function agregarFoto() {
+            const fotoContainer = document.getElementById('foto-container');
+            const newInput = document.createElement('input');
+            const quitarFotoBtn = document.getElementById('btn-quitar-foto');
+            newInput.type = 'file';
+            newInput.name = 'foto';
+            newInput.accept = 'image/*';
+            newInput.required = true; // Cambia a false si no es necesario
+            if (fotoContainer.childElementCount > 1 && fotoContainer.childElementCount < 6) {
+                const quitarFotoBtn = document.getElementById('btn-quitar-foto');
+                quitarFotoBtn.disabled = false; // Habilitar el botón de quitar foto
+                fotoContainer.appendChild(newInput);
+            }else if (fotoContainer.childElementCount == 6) {
+                alert("No puedes agregar más de 5 fotos.");
+                 // Quitar el nuevo input si se excede el límite
+                return;
+    
+            }
+    
+    
+        }
+    
+        function quitarFoto() {
+            const fotoContainer = document.getElementById('foto-container');
+            if (fotoContainer.childElementCount > 2) {
+                fotoContainer.removeChild(fotoContainer.lastChild); // Quitar la última foto
+            }
+            if (fotoContainer.childElementCount == 2) {
+                const quitarFotoBtn = document.getElementById('btn-quitar-foto');
+                quitarFotoBtn.disabled = true; // Deshabilitar el botón de quitar foto si no hay más fotos
+            }
+        }
+    </script>
 </body>
-<script src="js/region_comuna.js"></script>
-<script src="js/datetime.js"></script>
-<script src="js/modal.js"></script>
-<script src="js/validator.js"></script>
-<script>
-    function cerrarModal() {
-        const modal = document.getElementById("myModal");
-        modal.style.display = "none";
-    };
-    function revisaCheck(element){
- if (element.checked) {
-   document.getElementById(element.name).style.display = "block";
- } else {
-    document.getElementById(element.name).style.display = "none";
- }
- }
- 
-    function checkTema() {
-        const temaSelect = document.getElementById('tema');
-        const otroTemaOption = document.getElementById('otro_tema');
-        if (temaSelect.value === 'otro') {
-            otroTemaOption.style.display = 'block';
-        } else {
-            otroTemaOption.style.display = 'none';
-        }
-    }
-
-    document.getElementById('tema').addEventListener('change', checkTema);
-
-    function agregarFoto() {
-        const fotoContainer = document.getElementById('foto-container');
-        const newInput = document.createElement('input');
-        const quitarFotoBtn = document.getElementById('btn-quitar-foto');
-        newInput.type = 'file';
-        newInput.name = 'foto';
-        newInput.accept = 'image/*';
-        newInput.required = true; // Cambia a false si no es necesario
-        if (fotoContainer.childElementCount > 1 && fotoContainer.childElementCount < 6) {
-            const quitarFotoBtn = document.getElementById('btn-quitar-foto');
-            quitarFotoBtn.disabled = false; // Habilitar el botón de quitar foto
-            fotoContainer.appendChild(newInput);
-        }else if (fotoContainer.childElementCount == 6) {
-            alert("No puedes agregar más de 5 fotos.");
-             // Quitar el nuevo input si se excede el límite
-            return;
-
-        }
-
-
-    }
-
-    function quitarFoto() {
-        const fotoContainer = document.getElementById('foto-container');
-        if (fotoContainer.childElementCount > 2) {
-            fotoContainer.removeChild(fotoContainer.lastChild); // Quitar la última foto
-        }
-        if (fotoContainer.childElementCount == 2) {
-            const quitarFotoBtn = document.getElementById('btn-quitar-foto');
-            quitarFotoBtn.disabled = true; // Deshabilitar el botón de quitar foto si no hay más fotos
-        }
-    }
-</script>
 </html>
