@@ -1,8 +1,10 @@
 const validateRegion = (region) => {
     if (!region) return false;
+    return true;
 };
 const validateComuna = (comuna) => {
     if (!comuna) return false;
+    return true;
 };
 const validateSector = (sector) => {
     let validLength = sector.trim().length <= 100;
@@ -37,10 +39,12 @@ const validateContactar = (contacto) => {
 
 const validarFechaInicio = (fechaInicio) => {
     if (!fechaInicio) return false;
+    return true;
 }
 const validarFechaFin = (fechaFin) => {
     let fechaInicio = document.getElementById("fecha_inicio").value;
     if(fechaFin.value < fechaInicio) return false;
+    return true;
 }
 
 const validateTema = (tema) => {
@@ -51,23 +55,26 @@ const validateTema = (tema) => {
         let validLength = otroTema.trim().length <= 15 && otroTema.trim().length >= 2;
         return validLength;
     }
+    return true;
 }
 
 const validarFiles = (files) => {
     if (!files) return false;
-    let validLength = files.length <= 5;
+    let validLength = files.length <= 5 && files.length > 0;
     return validLength;
 }
 
 const validateForm = () => {
     console.log("Validando formulario...");
     // obtener elementos del DOM usando el nombre del formulario.
-    let region = document.getElementById("region").value;
-    let comuna = document.getElementById("comuna").value;
+    let myForm = document.forms["actividad-form"];
+    let region = myForm["region"].value;
+    let comuna = myForm["comuna"].value;
     let sector = document.getElementById("sector").value;
     let nombre = document.getElementById("nombre").value;
     let email = document.getElementById("email").value;
     let telefono = document.getElementById("numero").value;
+
 
     let fechaInicio = document.getElementById("fecha_inicio").value;
     let fechaFin = document.getElementById("fecha_fin").value;
@@ -87,25 +94,33 @@ const validateForm = () => {
     // validar los campos del contacto ((especial))
     if (document.getElementById("chk-whatsapp").checked) {
         let whatsapp = document.getElementById("whatsapp").value;
+        console.log("whatsapp: " + whatsapp);
         if (!validateContactar(whatsapp)) {
             setInvalidInput("Whatsapp");
         }
-    }else if (document.getElementById("chk-instagram").checked) {
+    }
+    if (document.getElementById("chk-instagram").checked) {
         let instagram = document.getElementById("instagram").value;
+        console.log("instagram: " + instagram);
         if (!validateContactar(instagram)) {
             setInvalidInput("Instagram");
         }
-    }else if (document.getElementById("chk-x").checked) {
+    }
+    if (document.getElementById("chk-x").checked) {
         let x = document.getElementById("x").value;
+        console.log("x: " + x);
         if (!validateContactar(x)) {
             setInvalidInput("X");
         }
-    }else if (document.getElementById("chk-telegram").checked) {
+    }
+    if (document.getElementById("chk-telegram").checked) {
         let telegram = document.getElementById("telegram").value;
+        console.log("telegram: " + telegram);
         if (!validateContactar(telegram)) {
             setInvalidInput("Telegram");
         }
-    }else if (document.getElementById("chk-tiktok").checked) {
+    }
+    if (document.getElementById("chk-tiktok").checked) {
         let tiktok = document.getElementById("tiktok").value;
         if (!validateContactar(tiktok)) {
             setInvalidInput("Tiktok");
@@ -121,10 +136,8 @@ const validateForm = () => {
     if (!validateTelefono(telefono)) {
         setInvalidInput("Teléfono");
     }
-    if (!validateContactar()) {
-        setInvalidInput("Contacto");
-    }
     if (!validateRegion(region)) {
+        console.log(region);
         setInvalidInput("Región");
     }
     if (!validateComuna(comuna)) {
