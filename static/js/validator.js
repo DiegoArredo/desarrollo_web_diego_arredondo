@@ -42,6 +42,7 @@ const validarFechaInicio = (fechaInicio) => {
 }
 const validarFechaFin = (fechaFin) => {
     let fechaInicio = document.getElementById("fecha_inicio").value;
+    if (!fechaFin) return false;
     if(fechaFin.value < fechaInicio) return false;
     return true;
 }

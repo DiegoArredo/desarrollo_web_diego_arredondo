@@ -227,15 +227,27 @@ def actividad(id):
                 'ruta': foto_path,
                 'nombre': foto.nombre_archivo
             })
+    contacto_db = db2.get_contactar_por_actividad_id(actividad_db.id)
+    contacto = []
+    for c in contacto_db:
+        if c:
+            contacto.append({
+                'id': c.id,
+                'tipo': c.nombre,
+                'identificador': c.identificador
+            })
     actividad = {
         'id': actividad_db.id,
         'nombre': actividad_db.nombre,
+        'email': actividad_db.email,
+        'celular': actividad_db.celular,
         'sector': actividad_db.sector,
         'descripcion': actividad_db.descripcion,
         'fecha_inicio': actividad_db.dia_hora_inicio,
         'fecha_termino': actividad_db.dia_hora_termino,
         'comuna_id': actividad_db.comuna_id,
         'comuna': comuna.nombre if comuna else None,
+        'contacto': contacto,
         'temas': temas,
         'fotos': fotos
     }

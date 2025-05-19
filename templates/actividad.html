@@ -10,8 +10,8 @@
         <th>Detalle</th>
     </tr>
     <tr>
-        <td>Nombre de la actividad</td>
-        <td>{{ actividad.nombre }}</td>
+        <td>Descripción</td>
+        <td>{{ actividad.descripcion }}</td>
     </tr>
     <tr>
         <td>Tema</td>
@@ -20,10 +20,6 @@
             {{ tema.tema.value }}
             {% endfor %}
         </td>
-    </tr>
-    <tr>
-        <td>Descripción</td>
-        <td>{{ actividad.descripcion }}</td>
     </tr>
     <tr>
         <td>Fecha de inicio</td>
@@ -45,7 +41,26 @@
         <td>Nombre del organizador</td>
         <td>{{ actividad.nombre }}</td>
     </tr>
+    {% if actividad.celular %}
     <tr>
+        <td>Teléfono del organizador</td>
+        <td>{{ actividad.celular }}</td>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <td>Correo del organizador</td>
+        <td>{{ actividad.email }}</td>
+    </tr>
+    {% if actividad.contacto %}
+    {% for contacto in actividad.contacto %}
+    <tr>
+        <td>{{ contacto.tipo.value }}</td>
+        <td>{{ contacto.identificador }}</td>
+    </tr>
+    <tr>
+    {% endfor %}
+    {% endif %}
         <td>Fotos</td>
         <td>
             {% if actividad.fotos %}
