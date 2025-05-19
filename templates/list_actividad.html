@@ -1,54 +1,53 @@
 {% extends "base.html" %}
 {%block title %}Listado de Actividades{% endblock %}
 {% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/form.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/form.css') }}">
 {% endblock %}
 {% block content %}
-    {% if data %}
-    
-    <!-- tabla con columnas: inicio,termino,comuna,sector,tema,nombre organizador y total de fotos -->
-    <h1>Listado de Actividades</h1>
-    <table>
-        <tr>
-            <th>Inicio</th>
-            <th>Término</th>
-            <th>Comuna</th>
-            <th>Sector</th>
-            <th>Tema</th>
-            <th>Nombre Organizador</th>
-            <th>Total de Fotos</th>
-        </tr>
-        {% for actividad in data %}
-            <tr onclick="location.href='{{ url_for('actividad', id=actividad.id) }}';">
-                <td>{{ actividad.fecha_inicio }}</td>
-                <td>{{ actividad.fecha_termino }}</td>
-                <td>{{ actividad.comuna }}</td>
-                <td>{{ actividad.sector }}</td>
-                <td>{% for tema in actividad.temas  %}
-                        {{ tema.tema.value}}
-                    {% endfor %}
-                </td>
-                <td>{{ actividad.nombre }}</td>
-                <td>{{ actividad.foto }}</td>
-            </tr>
-        {% endfor %}
-        {% endif %}
-        {% if not data %}
-            <tr>
-                <td colspan="7">No hay actividades registradas.</td>
-            </tr>
-        {% endif %}
-    </table>
-    <div class="paginacion">
+{% if data %}
+
+<!-- tabla con columnas: inicio,termino,comuna,sector,tema,nombre organizador y total de fotos -->
+<h1>Listado de Actividades</h1>
+<table>
+    <tr>
+        <th>Inicio</th>
+        <th>Término</th>
+        <th>Comuna</th>
+        <th>Sector</th>
+        <th>Tema</th>
+        <th>Nombre Organizador</th>
+        <th>Total de Fotos</th>
+    </tr>
+    {% for actividad in data %}
+    <tr onclick="location.href='{{ url_for('actividad', id=actividad.id) }}';">
+        <td>{{ actividad.fecha_inicio }}</td>
+        <td>{{ actividad.fecha_termino }}</td>
+        <td>{{ actividad.comuna }}</td>
+        <td>{{ actividad.sector }}</td>
+        <td>{% for tema in actividad.temas %}
+            {{ tema.tema.value}}
+            {% endfor %}
+        </td>
+        <td>{{ actividad.nombre }}</td>
+        <td>{{ actividad.foto }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    {% if not data %}
+    <tr>
+        <td colspan="7">No hay actividades registradas.</td>
+    </tr>
+    {% endif %}
+</table>
+<div class="paginacion">
     {% if page > 1 %}
-        <a href="{{ url_for('actividades', page=page-1) }}">Anterior</a>
+    <a href="{{ url_for('actividades', page=page-1) }}">Anterior</a>
     {% endif %}
 
     <span>Página {{ page }} de {{ total_paginas }}</span>
 
-    {% if page < total_paginas %}
-        <a href="{{ url_for('actividades', page=page+1) }}">Siguiente</a>
-    {% endif %}
+    {% if page < total_paginas %} <a href="{{ url_for('actividades', page=page+1) }}">Siguiente</a>
+        {% endif %}
 </div>
-  
+
 {% endblock %}

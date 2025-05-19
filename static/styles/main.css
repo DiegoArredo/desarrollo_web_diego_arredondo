@@ -8,7 +8,16 @@ body {
 
 table,th,td{
     border: 1px solid;
+    padding: 5px;
 }
+table{
+    border-collapse: collapse;
+
+}
+table td, table th{
+    padding: 5px;
+}
+
 img{
     width: 300px;
     height: 400px;

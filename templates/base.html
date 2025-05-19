@@ -1,50 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
-    {% block css %}{% endblock %}
-</head>
-<body>
-    <header>
-        
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Inicio</a></li>
-                <li><a href="{{url_for('add_actividad')}}">Agregar Actividad</a></li>
-                <li><a href="{{url_for('actividades')}}">Ver listado actividades</a></li>
-                <li><a href="{{url_for('estadisticas')}}">Estadísticas</a></li>
-            </ul>
-        </nav>
-    </header>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul>
-      {% for category, message in messages %}
-        <li style="background-color: green;" class="{{ category }}">{{ message }}</li>
-        
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-        {% if errores %}
-    {% for e in errores %}
-    <p style="color: red; background-color: yellow;">{{ e }}</p>
-    {% endfor %}
-    {% endif %}
 
-{% if mensajes %}
-  {% for m in mensajes %}
-<p style="background-color: green;">{{ m }}</p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+  {% block css %}{% endblock %}
+</head>
+
+<body>
+  <header>
+
+    <nav>
+      <ul>
+        <li><a href="{{ url_for('home') }}">Inicio</a></li>
+        <li><a href="{{url_for('add_actividad')}}">Agregar Actividad</a></li>
+        <li><a href="{{url_for('actividades')}}">Ver listado actividades</a></li>
+        <li><a href="{{url_for('estadisticas')}}">Estadísticas</a></li>
+      </ul>
+    </nav>
+  </header>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <ul>
+    {% for category, message in messages %}
+    <li style="background-color: green;" class="{{ category }}">{{ message }}</li>
+
     {% endfor %}
-    {% endif %}   
-    {% block content %}{% endblock %}
-    <footer>
-        <p>&copy; 2025 Actividades Recreativas. Todos los derechos reservados.</p>
-    </footer>
-    {% block js %}
-    {% endblock %}   
+  </ul>
+  {% endif %}
+  {% endwith %}
+  {% if errores %}
+  {% for e in errores %}
+  <p style="color: red; background-color: yellow;">{{ e }}</p>
+  {% endfor %}
+  {% endif %}
+
+  {% if mensajes %}
+  {% for m in mensajes %}
+  <p style="background-color: green;">{{ m }}</p>
+  {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+  <footer>
+    <p>&copy; 2025 Actividades Recreativas. Todos los derechos reservados.</p>
+  </footer>
+  {% block js %}
+  {% endblock %}
 </body>
+
 </html>

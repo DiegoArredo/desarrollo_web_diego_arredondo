@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{url_for('static', filename='styles/modal.css')}}">
 {% endblock %}
 {% block content %}
-<table cellpadding="5" cellspacing="0">
+<table>
     <tr>
         <th>Campo</th>
         <th>Detalle</th>
@@ -58,27 +58,25 @@
         <td>{{ contacto.tipo.value }}</td>
         <td>{{ contacto.identificador }}</td>
     </tr>
-    <tr>
     {% endfor %}
     {% endif %}
+    <tr>
         <td>Fotos</td>
         <td>
             {% if actividad.fotos %}
             <table>
                 <tr>
                     {% for foto in actividad.fotos[:5] %}
-                    {% if foto %}
+
                     <td>
                         <img id="{{foto.id}}" src="{{ foto.ruta }}" alt="{{foto.nombre}}"
                             style="width: 100px; height: auto;">
                     </td>
-                    {% endif %}
+
 
                     {% endfor %}
                 </tr>
             </table>
-            {% else %}
-            No hay fotos disponibles.
             {% endif %}
         </td>
     </tr>
