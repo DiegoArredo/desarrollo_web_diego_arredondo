@@ -198,10 +198,6 @@ const validateForm = () => {
         // ocultar el mensaje de validación si el formulario es válido
         validationBox.hidden = true;
         // alertar al usuario que el formulario es válido "hemos recibido su información, muchas gracias, suerte en su actividad"
-        alert("Hemos recibido su información, muchas gracias, suerte en su actividad.");
-        //llevar a la pagina de inicio
-        window.location.href = "/index.html";
-        // enviar el formulario
         document.getElementById("actividad-form").submit();
     }
   };

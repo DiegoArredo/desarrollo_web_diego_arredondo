@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Actividad{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='styles/modal.css')}}">
+{% endblock %}
+{% block content %}
+<table cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Campo</th>
+        <th>Detalle</th>
+    </tr>
+    <tr>
+        <td>Nombre de la actividad</td>
+        <td>{{ actividad.nombre }}</td>
+    </tr>
+    <tr>
+        <td>Tema</td>
+        <td>
+            {% for tema in actividad.temas %}
+            {{ tema.tema.value }}
+            {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td>Descripción</td>
+        <td>{{ actividad.descripcion }}</td>
+    </tr>
+    <tr>
+        <td>Fecha de inicio</td>
+        <td>{{ actividad.fecha_inicio }}</td>
+    </tr>
+    <tr>
+        <td>Fecha de fin</td>
+        <td>{{ actividad.fecha_termino }}</td>
+    </tr>
+    <tr>
+        <td>Comuna</td>
+        <td>{{ actividad.comuna }}</td>
+    </tr>
+    <tr>
+        <td>Sector</td>
+        <td>{{ actividad.sector }}</td>
+    </tr>
+    <tr>
+        <td>Nombre del organizador</td>
+        <td>{{ actividad.nombre }}</td>
+    </tr>
+    <tr>
+        <td>Fotos</td>
+        <td>
+            {% if actividad.fotos %}
+            <table>
+                <tr>
+                    {% for foto in actividad.fotos[:5] %}
+                    {% if foto %}
+                    <td>
+                        <img id="{{foto.id}}" src="{{ foto.ruta }}" alt="{{foto.nombre}}"
+                            style="width: 100px; height: auto;">
+                    </td>
+                    {% endif %}
+
+                    {% endfor %}
+                </tr>
+            </table>
+            {% else %}
+            No hay fotos disponibles.
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" onclick="cerrarModal()">&times;</span>
+        <img class="modal-content" id="img01" src="js-add" alt="image-big">
+    </div>
+
+</div>
+{% endblock %}
+{% block js %}
+<script src="{{url_for('static', filename='js/selectfoto.js')  }}"></script>
+{% endblock %}

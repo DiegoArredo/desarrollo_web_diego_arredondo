@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Bienvenid@{% endblock %}
+{% block css %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Bienvenid@ a Gestion de Actividades Recreativas</h2>
+    <p>En esta aplicación podrás gestionar actividades recreativas de manera sencilla y eficiente.</p>
+    <p>Utiliza el menú de navegación para acceder a las diferentes secciones de la aplicación.</p>
+    {% if data %}
+     <table>
+        <tr>
+            <th>Inicio</th>
+            <th>Término</th>
+            <th>Comuna</th>
+            <th>Sector</th>
+            <th>Tema</th>
+            <th>Foto</th>
+        </tr>
+        {% for actividad in data %}
+        <tr>
+            <td>{{ actividad.fecha_inicio }}</td>
+            <td>{{ actividad.fecha_termino }}</td>
+            <td>{{ actividad.comuna }}</td>
+            <td>{{ actividad.sector }}</td>
+            <td>{% for tema in actividad.temas  %}
+                    {{ tema.tema.value }}
+            {% endfor %}</td>
+            <td>
+                {% if actividad.foto %}
+                    <img id="{{actividad.foto.id}}" src="{{ actividad.foto.ruta }}" alt="{{actividad.foto.nombre}}" style="width: 100px; height: auto;">
+                {% else %}
+                    No hay foto disponible
+                {% endif %}
+           
+        </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}
