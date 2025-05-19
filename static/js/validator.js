@@ -24,7 +24,6 @@ const validateEmail = (email) => {
 }
 
 const validateTelefono = (telefono) => {
-    if (!telefono) return false;
     let validLength = telefono.trim().length >= 8;
     let re = /^[0-9]+$/;
     let formatValid = re.test(telefono);

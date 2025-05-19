@@ -34,8 +34,6 @@ def validate_email(email):
     return re.match(pattern, email) is not None
 
 def validate_telefono(telefono):
-    if not telefono:
-        return False
     telefono = telefono.strip()
     if len(telefono) < 8:
         return False
