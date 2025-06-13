@@ -10,17 +10,24 @@
 <section>
 
     <div>
-        <h2>Cantidad de Actividades por Día</h2>
-        <img src="{{url_for('static', filename='img/g-lineal.png')}}" alt="Gráfico de Líneas">
+        <h2>Actividades por Día</h2>
+        <div id="linearchart"></div>
     </div>
+
     <div>
         <h2>Total de Actividades por Tipo</h2>
-        <img src="{{url_for('static', filename='img/g-torta.png')}}" alt="Gráfico de Torta">
+        <div id="piechart"></div>
     </div>
     <div>
         <h2>Actividades por Horario</h2>
-        <img src="{{url_for('static', filename='img/g-barra.png')}}" alt="Gráfico de Barras">
+        <div id="columnchart"></div>
     </div>
 </section>
+<a href="{{ url_for('home') }}" class="btn">Volver al Inicio</a>
 
 {% endblock %}
+{% block js %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="{{url_for('static', filename='js/stats.js')}}"></script>
+{% endblock %}
+

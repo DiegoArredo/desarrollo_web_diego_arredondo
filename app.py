@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, redirect, url_for, session, flash
+from flask import Flask, jsonify, request, render_template, redirect, url_for, session, flash
+from flask_cors import cross_origin
 from database import db2
 from utils.validations import *
 import os
@@ -6,6 +7,7 @@ import uuid
 import hashlib
 import filetype
 from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
 
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -19,7 +21,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 @app.route('/',methods=['GET'])
 def home():
     actividades = []
-    PAGE_SIZE= 5
+    PAGE_SIZE= 20
     actividades_db = db2.get_all_actividades(PAGE_SIZE)
     for actividad in actividades_db:
         comuna = db2.get_comuna_por_id(actividad.comuna_id)
@@ -44,13 +46,18 @@ def home():
             'temas':    temas,
             'foto': foto if foto else None
         })
-    print(actividades)
+    # ordenar por fecha
+    actividades.sort(key=lambda x: x['fecha_inicio'], reverse=True)
+    # Limitar a 5 actividades
+    actividades = actividades[:5]
     return render_template('main/main.html', data = actividades)
 
 @app.route("/actividades", methods=['GET'])
 def actividades():
     PAGE_SIZE= 5
     page = request.args.get('page', 1, type=int)
+    if type(page) is not int or page < 1:
+        page = 1
     total_actividades = len(db2.get_all_actividades(1000))
     total_pages = (total_actividades // 5) + (1 if total_actividades % 5 > 0 else 0)
     offset = (page - 1) * PAGE_SIZE
@@ -74,6 +81,7 @@ def actividades():
             'foto': len(fotos)
         })
     print(actividades)
+    
     return render_template('list_actividad.html', data=actividades,  page=page, total_paginas=total_pages)
 
 @app.route("/add-actividad", methods=['GET', 'POST'])
@@ -212,51 +220,154 @@ def add_actividad():
             return redirect(url_for('home'),)
     return render_template('form_actividad.html', errores=errores ,mensajes=mensajes)
 
-@app.route("/actividad/<int:id>", methods=['GET'])
+@app.route("/actividad/<int:id>", methods=['GET', 'POST'])
 def actividad(id):
-    actividad_db = db2.get_actividad_by_id(id)
-    comuna = db2.get_comuna_por_id(actividad_db.comuna_id)
-    fotos_db = db2.get_fotos_por_actividad_id(actividad_db.id)
-    temas = db2.get_temas_por_actividad_id(actividad_db.id)
-    fotos = []
-    for foto in fotos_db:
-        if foto:
-            foto_path = url_for('static', filename=f"uploads/{foto.ruta_archivo}")
-            fotos.append({
-                'id': foto.id,
-                'ruta': foto_path,
-                'nombre': foto.nombre_archivo
-            })
-    contacto_db = db2.get_contactar_por_actividad_id(actividad_db.id)
-    contacto = []
-    for c in contacto_db:
-        if c:
-            contacto.append({
-                'id': c.id,
-                'tipo': c.nombre,
-                'identificador': c.identificador
-            })
-    actividad = {
-        'id': actividad_db.id,
-        'nombre': actividad_db.nombre,
-        'email': actividad_db.email,
-        'celular': actividad_db.celular,
-        'sector': actividad_db.sector,
-        'descripcion': actividad_db.descripcion,
-        'fecha_inicio': actividad_db.dia_hora_inicio,
-        'fecha_termino': actividad_db.dia_hora_termino,
-        'comuna_id': actividad_db.comuna_id,
-        'comuna': comuna.nombre if comuna else None,
-        'contacto': contacto,
-        'temas': temas,
-        'fotos': fotos
-    }
-    return render_template('actividad.html', actividad = actividad)
+    # Manejo de comentarios de la actividad:
+    errores = []
+    mensajes = []
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        texto = request.form.get('texto')
+        fecha = datetime.now()
+        actividad_id = id
+        if not validate_nombre_comentario(nombre):
+            errores.append('Nombre inválido (3-80 caracteres)')
+            flash('Nombre inválido (3-80 caracteres)', 'error')
+            return redirect(url_for('actividad', id=id))
+        if not validate_texto_comentario(texto):
+            errores.append('Texto inválido (mínimo 5 caracteres y máximo 1000)')
+            flash('Texto inválido (mínimo 5 caracteres y máximo 1000)', 'error')
+            return redirect(url_for('actividad', id=id))
+        
+        db2.add_comentario(actividad_id, nombre, texto, fecha)
+        mensajes.append('Comentario agregado correctamente')
+        flash('Comentario agregado correctamente', 'success')
+        return redirect(url_for('actividad', id=id))
+    if request.method == 'GET':
+        actividad_db = db2.get_actividad_by_id(id)
+        comuna = db2.get_comuna_por_id(actividad_db.comuna_id)
+        fotos_db = db2.get_fotos_por_actividad_id(actividad_db.id)
+        temas = db2.get_temas_por_actividad_id(actividad_db.id)
+        fotos = []
+        for foto in fotos_db:
+            if foto:
+                foto_path = url_for('static', filename=f"uploads/{foto.ruta_archivo}")
+                fotos.append({
+                    'id': foto.id,
+                    'ruta': foto_path,
+                    'nombre': foto.nombre_archivo
+                })
+    
+        comentarios_db = db2.get_comentarios_por_actividad_id(actividad_db.id)
+        comentarios = []
+        for comentario in comentarios_db:
+            if comentario:
+                comentarios.append({
+                    'id': comentario.id,
+                    'nombre': comentario.nombre,
+                    'texto': comentario.texto,
+                    'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S')
+                })
+
+        contacto_db = db2.get_contactar_por_actividad_id(actividad_db.id)
+        contacto = []
+        for c in contacto_db:
+            if c:
+                contacto.append({
+                    'id': c.id,
+                    'tipo': c.nombre,
+                    'identificador': c.identificador
+                })
+        actividad = {
+            'id': actividad_db.id,
+            'nombre': actividad_db.nombre,
+            'email': actividad_db.email,
+            'celular': actividad_db.celular,
+            'sector': actividad_db.sector,
+            'descripcion': actividad_db.descripcion,
+            'fecha_inicio': actividad_db.dia_hora_inicio,
+            'fecha_termino': actividad_db.dia_hora_termino,
+            'comuna_id': actividad_db.comuna_id,
+            'comuna': comuna.nombre if comuna else None,
+            'contacto': contacto,
+            'temas': temas,
+            'fotos': fotos,
+            'comentarios': comentarios
+        }
+        return render_template('actividad.html', actividad = actividad)
 
 @app.route("/estadisticas", methods=['GET'])
 def estadisticas():
 
     return render_template('estadisticas.html')
 
+@app.route("/obtener_stats", methods=['GET'])
+@cross_origin(origin="127.0.0.1", supports_credentials=True)
+def obtener_stats():
+    # Obtener todas las actividades
+    todas_las_actividades = db2.get_all_actividades(1000)
+
+    # filtrar actividades por día
+    actividades_por_dia =[]
+    for i in range(30):
+        dia_actual = (datetime.now() - timedelta(days=i)).date()
+        actividades_dia = [actividad for actividad in todas_las_actividades if actividad.dia_hora_inicio.date() == dia_actual]
+        actividades_por_dia.append({
+            'dia': dia_actual.strftime('%Y-%m-%d'),
+            'cantidad': len(actividades_dia)
+        })
+
+    # filtrar actividades por tipo
+    actividades_por_tipo = []
+    tipos = db2.get_all_temas()
+    for tipo in db2.ActividadTemaTema:
+        actividades_tipo = db2.get_actividades_por_tema(tipo)
+        actividades_por_tipo.append({
+            'tipo': tipo.value,
+            'cantidad': len(actividades_tipo)
+        })
+    actividades_por_mes_mañana = []
+    # filtrar todas_las_actividades por mes y hora para la mañana
+    for i in range(12):
+        mes_actual = (datetime.now() - timedelta(days=i*30)).date().replace(day=1)
+        actividades_mañana = [actividad for actividad in todas_las_actividades if actividad.dia_hora_inicio.month == mes_actual.month and actividad.dia_hora_inicio.hour < 12]
+        actividades_por_mes_mañana.append({
+            'mes': mes_actual.strftime('%B'),
+            'cantidad': len(actividades_mañana)
+        })
+    actividades_por_mes_mediodia = []
+    # filtrar todas_las_actividades por mes y hora para el mediodía
+    for i in range(12):
+        mes_actual = (datetime.now() - timedelta(days=i*30)).date().replace(day=1)
+        actividades_mediodia = [actividad for actividad in todas_las_actividades if actividad.dia_hora_inicio.month == mes_actual.month and 12 <= actividad.dia_hora_inicio.hour < 18]
+        actividades_por_mes_mediodia.append({
+            'mes': mes_actual.strftime('%B'),
+            'cantidad': len(actividades_mediodia)
+        })
+    actividades_por_mes_tarde = []
+    # filtrar todas_las_actividades por mes y hora para la tarde
+    for i in range(12):
+        mes_actual = (datetime.now() - timedelta(days=i*30)).date().replace(day=1)
+        actividades_tarde = [actividad for actividad in todas_las_actividades if actividad.dia_hora_inicio.month == mes_actual.month and actividad.dia_hora_inicio.hour >= 18]
+        actividades_por_mes_tarde.append({
+            'mes': mes_actual.strftime('%B'),
+            'cantidad': len(actividades_tarde)
+        })
+    print("DATA")
+    print(actividades_por_mes_mañana)
+    print(actividades_por_mes_mediodia)
+    print(actividades_por_mes_tarde)
+    print(actividades_por_dia)
+    print(actividades_por_tipo)
+    # Preparar los datos para enviar al frontend
+
+    data = {
+        'actividades_por_dia': actividades_por_dia,
+        'actividades_por_tipo': actividades_por_tipo,
+        'actividades_por_mes_mañana': actividades_por_mes_mañana,
+        'actividades_por_mes_mediodia': actividades_por_mes_mediodia,
+        'actividades_por_mes_tarde': actividades_por_mes_tarde
+    }
+    return jsonify(data)
 if __name__ == "__main__":
     app.run(debug=True)

@@ -77,6 +77,7 @@ class Actividad(Base):
     fotos = relationship("Foto", back_populates="actividad")
     contactar_por = relationship("ContactarPor", back_populates="actividad")
     actividad_temas = relationship("ActividadTema", back_populates="actividad")
+    comentarios = relationship("Comentario", back_populates="actividad")
 
 
 class Foto(Base):
@@ -114,6 +115,18 @@ class ActividadTema(Base):
 
     actividad = relationship("Actividad", back_populates="actividad_temas")
 
+
+class Comentario(Base):
+    __tablename__ = "comentario"
+
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    nombre = mapped_column(String(80), nullable=False)
+    texto = mapped_column(String(300), nullable=False)
+    fecha = mapped_column(DateTime, nullable=False)
+    actividad_id = mapped_column(Integer, ForeignKey("actividad.id"), nullable=False, index=True)
+
+    actividad = relationship("Actividad", back_populates="comentarios")
+    Actividad.comentarios = relationship("Comentario", back_populates="actividad")
 
 # --- Database Functions ---
 
@@ -197,6 +210,12 @@ def get_temas_por_actividad_id(actividad_id):
     session.close()
     return temas
 
+def get_all_temas():
+    session = SessionLocal()
+    temas = session.query(ActividadTema).all()
+    session.close()
+    return temas
+
 def get_contactar_por_actividad_id(actividad_id):
     session = SessionLocal()
     contactar_por = session.query(ContactarPor).filter_by(actividad_id=actividad_id).all()
@@ -252,6 +271,56 @@ def get_all_actividades_paginadas(limit=5, offset=0):
     return actividades
 # add_actividad(10304, "sector", "nombre", "email", "celular", "2023-10-01 10:00:00", "2023-10-01 12:00:00", "descripcion")
 
+
+#Queries para obtener actividades por diferentes criterios
+
+def get_actividades_por_tema(tema):
+    session = SessionLocal()
+    actividades = session.query(Actividad).join(Actividad.actividad_temas).filter(ActividadTema.tema == tema).all()
+    session.close()
+    return actividades
+
+
+# def get_actividades_por_mes_en_la_mañana(mes):
+#     session = SessionLocal()
+#     actividades = session.query(Actividad).filter(Actividad.dia_hora_inicio == mes, Actividad.dia_hora_inicio < 12).all()
+#     session.close()
+#     return actividades
+
+# def get_actividades_por_mes_en_el_mediodia(mes):
+#     session = SessionLocal()
+#     actividades = session.query(Actividad).filter(Actividad.dia_hora_inicio.month == mes, Actividad.dia_hora_inicio.hour >= 12, Actividad.dia_hora_inicio.hour < 18).all()
+#     session.close()
+#     return actividades
+
+# def get_actividades_por_mes_en_la_noche(mes):
+#     session = SessionLocal()
+#     actividades = session.query(Actividad).filter(Actividad.dia_hora_inicio.month == mes, Actividad.dia_hora_inicio.hour >= 18).all()
+#     session.close()
+#     return actividades
+ 
+#Query para añadir comentarios a las actividades
+def add_comentario(actividad_id, nombre, texto, fecha):
+    session = SessionLocal()
+    new_comentario = Comentario(
+        actividad_id=actividad_id,
+        nombre=nombre,
+        texto=texto,
+        fecha=fecha
+    )
+    session.add(new_comentario)
+    session.commit()
+    session.refresh(new_comentario)
+    id = new_comentario.id
+    session.close()
+    return id
+
+# Query para obtener comentarios por actividad_id
+def get_comentarios_por_actividad_id(actividad_id):
+    session = SessionLocal()
+    comentarios = session.query(Comentario).filter_by(actividad_id=actividad_id).all()
+    session.close()
+    return comentarios
 
 #añadir actividad
 

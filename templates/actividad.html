@@ -2,6 +2,9 @@
 {% block title %}Actividad{% endblock %}
 {% block css %}
 <link rel="stylesheet" href="{{url_for('static', filename='styles/modal.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='styles/actividad.css')}}">
+{% endblock %}
+{% block header %}
 {% endblock %}
 {% block content %}
 <table>
@@ -82,7 +85,57 @@
     </tr>
 </table>
 
+<section>
+    <h3>Deja tu comentaio</h3>
+    {% if errores %}
+    {% for e in errores %}
+    <p style="color: red; background-color: yellow;">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
 
+    {% if mensajes %}
+    {% for m in mensajes %}
+    <p style="background-color: green;">{{ m }}</p>
+    {% endfor %}
+    {% endif %}
+
+    <div id="val-box" hidden>
+        <h2 id="val-msg">-</h2>
+        <ul id="val-list"></ul>
+    </div>
+
+    <form  method="post" enctype="multipart/form-data" id="comentario-form">
+        <input type="hidden" name="actividad_id" value="{{ actividad.id }}">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+
+        <textarea id="texto" name="texto" cols="50" rows="4" placeholder="Escriba su comentario..." required></textarea>
+        <button type="submit">Enviar</button>
+    </form>
+
+
+    <h3>Comentarios de la Actividad</h3>
+    <!-- comentarios.append({
+      'id': comentario.id,
+      'nombre': comentario.nombre,
+      'texto': comentario.texto,
+      'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S') -->
+    {% if actividad.comentarios %}
+    {% for comentario in actividad.comentarios %}
+    <div class="comentario" >
+        <p class="encabezado"><strong class="fecha">{{ comentario.nombre }}</strong> ({{ comentario.fecha }}):</p>
+        <p class="cuerpo">{{ comentario.texto }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No hay comentarios para esta actividad.</p>
+    {% endif %}
+
+
+
+</section>
 <div id="myModal" class="modal">
 
     <!-- Modal content -->
@@ -94,5 +147,57 @@
 </div>
 {% endblock %}
 {% block js %}
+<script>
+    function validateNombre(nombre) {
+        if (!nombre) return false;
+        if (nombre.length < 3 || nombre.length > 80) {
+            return false;
+        }
+        return true;
+    }
+
+    function validateTexto(texto) {
+        if (!texto) return false;
+        if (texto.length < 3 || texto.length > 1000) {
+            return false;
+        }
+        return true;
+    }
+
+    function validarFormulario() {
+        console.log("Validando formulario...");
+        let myForm = document.getElementById('comentario-form');
+        let nombre = myForm.nombre.value.trim();
+        let texto = myForm.texto.value.trim();
+
+        let valBox = document.getElementById('val-box');
+        let valMsg = document.getElementById('val-msg');
+        let valList = document.getElementById('val-list');
+
+        
+        valList.innerHTML = ""; // Limpiar la lista de errores
+        valBox.hidden = false; // Mostrar el cuadro de validación  
+        let errores = [];
+        if (!validateNombre(nombre)) {
+            errores.push("El nombre debe tener entre 3 y 80 caracteres.");
+        }
+        if (!validateTexto(texto)) {
+            errores.push("El comentario debe tener entre 3 y 1000 caracteres.");
+        }
+        if (errores.length > 0) {
+            errores.forEach(function(error) {
+                let li = document.createElement('li');
+                li.textContent = error;
+                valList.appendChild(li);
+            });
+            return false; 
+        } else {
+            valBox.hidden = true; 
+            document.getElementById('comentario-form').submit(); // Enviar el formulario
+        }
+        
+       
+    }
+</script>
 <script src="{{url_for('static', filename='js/selectfoto.js')  }}"></script>
 {% endblock %}

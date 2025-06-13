@@ -98,3 +98,19 @@ def validate_img(file):
     if ftype_guess.mime not in ALLOWED_MIMETYPES:
         return False
     return True
+
+
+def validate_nombre_comentario(nombre_comentario):
+    if not nombre_comentario:
+        return False
+    length = len(nombre_comentario.strip())
+    if (not 3 <= length <= 80):
+        return False
+    return True
+def validate_texto_comentario(comentario):
+    if not comentario:
+        return False
+    length = len(comentario.strip())
+    if (not 5 <= length <= 1000):
+        return False
+    return True
