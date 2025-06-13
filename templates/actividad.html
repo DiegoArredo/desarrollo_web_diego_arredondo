@@ -7,7 +7,7 @@
 {% block header %}
 {% endblock %}
 {% block content %}
-<table>
+<table id="tabla_actividad">
     <tr>
         <th>Campo</th>
         <th>Detalle</th>
@@ -100,11 +100,11 @@
     {% endif %}
 
     <div id="val-box" hidden>
-        <h2 id="val-msg">-</h2>
+        <h2 id="val-msg">Errores:</h2>
         <ul id="val-list"></ul>
     </div>
 
-    <form  method="post" enctype="multipart/form-data" id="comentario-form">
+    <form method="POST"  id="comentario-form">
         <input type="hidden" name="actividad_id" value="{{ actividad.id }}">
         <div class="form-group">
             <label for="nombre">Nombre:</label>
@@ -112,7 +112,7 @@
         </div>
 
         <textarea id="texto" name="texto" cols="50" rows="4" placeholder="Escriba su comentario..." required></textarea>
-        <button type="submit">Enviar</button>
+        <button type="button" onclick="validarFormulario()">Enviar</button>
     </form>
 
 
@@ -122,16 +122,13 @@
       'nombre': comentario.nombre,
       'texto': comentario.texto,
       'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S') -->
-    {% if actividad.comentarios %}
-    {% for comentario in actividad.comentarios %}
-    <div class="comentario" >
-        <p class="encabezado"><strong class="fecha">{{ comentario.nombre }}</strong> ({{ comentario.fecha }}):</p>
-        <p class="cuerpo">{{ comentario.texto }}</p>
+    <div id="comentarios_container">
+        No hay comentarios para esta actividad.
+        
+
+        
     </div>
-    {% endfor %}
-    {% else %}
-    <p>No hay comentarios para esta actividad.</p>
-    {% endif %}
+
 
 
 
@@ -141,13 +138,17 @@
     <!-- Modal content -->
     <div class="modal-content">
         <span class="close" onclick="cerrarModal()">&times;</span>
-        <img class="modal-content" id="img01" src="js-add" alt="image-big">
+        <img class="modal-content" id="img01" src="js-a" alt="image-big">
     </div>
 
 </div>
 {% endblock %}
 {% block js %}
+<script src="{{url_for('static', filename='js/selectfoto.js')  }}"></script>
+<script src="{{url_for('static', filename='js/comentarios.js')  }}"></script>
 <script>
+    obtener_comentarios()
+
     function validateNombre(nombre) {
         if (!nombre) return false;
         if (nombre.length < 3 || nombre.length > 80) {
@@ -158,18 +159,19 @@
 
     function validateTexto(texto) {
         if (!texto) return false;
-        if (texto.length < 3 || texto.length > 1000) {
+        if (texto.length < 5 || texto.length > 1000) {
             return false;
         }
         return true;
     }
-
+    
     function validarFormulario() {
         console.log("Validando formulario...");
         let myForm = document.getElementById('comentario-form');
         let nombre = myForm.nombre.value.trim();
         let texto = myForm.texto.value.trim();
-
+        let actividadId = myForm.actividad_id.value;
+        
         let valBox = document.getElementById('val-box');
         let valMsg = document.getElementById('val-msg');
         let valList = document.getElementById('val-list');
@@ -182,7 +184,7 @@
             errores.push("El nombre debe tener entre 3 y 80 caracteres.");
         }
         if (!validateTexto(texto)) {
-            errores.push("El comentario debe tener entre 3 y 1000 caracteres.");
+            errores.push("El comentario debe tener entre 5 y 1000 caracteres.");
         }
         if (errores.length > 0) {
             errores.forEach(function(error) {
@@ -193,11 +195,20 @@
             return false; 
         } else {
             valBox.hidden = true; 
-            document.getElementById('comentario-form').submit(); // Enviar el formulario
+            data = {
+                'actividad_id': actividadId,
+                'nombre': nombre,
+                'texto': texto
+            };
+            console.log("Agregar comentario:", data);
+            agergar_comentario(data) // Enviar el formulario
         }
         
        
     }
+
+    function limpiar_formulario() {
+        document.getElementById('comentario-form').reset();
+    }
 </script>
-<script src="{{url_for('static', filename='js/selectfoto.js')  }}"></script>
 {% endblock %}

@@ -220,29 +220,11 @@ def add_actividad():
             return redirect(url_for('home'),)
     return render_template('form_actividad.html', errores=errores ,mensajes=mensajes)
 
-@app.route("/actividad/<int:id>", methods=['GET', 'POST'])
+@app.route("/actividad/<int:id>", methods=['GET'])
+@cross_origin(origin="127.0.0.1", supports_credentials=True)
 def actividad(id):
-    # Manejo de comentarios de la actividad:
-    errores = []
-    mensajes = []
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        texto = request.form.get('texto')
-        fecha = datetime.now()
-        actividad_id = id
-        if not validate_nombre_comentario(nombre):
-            errores.append('Nombre inválido (3-80 caracteres)')
-            flash('Nombre inválido (3-80 caracteres)', 'error')
-            return redirect(url_for('actividad', id=id))
-        if not validate_texto_comentario(texto):
-            errores.append('Texto inválido (mínimo 5 caracteres y máximo 1000)')
-            flash('Texto inválido (mínimo 5 caracteres y máximo 1000)', 'error')
-            return redirect(url_for('actividad', id=id))
-        
-        db2.add_comentario(actividad_id, nombre, texto, fecha)
-        mensajes.append('Comentario agregado correctamente')
-        flash('Comentario agregado correctamente', 'success')
-        return redirect(url_for('actividad', id=id))
+    
+    # Manejo de la actividad:
     if request.method == 'GET':
         actividad_db = db2.get_actividad_by_id(id)
         comuna = db2.get_comuna_por_id(actividad_db.comuna_id)
@@ -258,17 +240,7 @@ def actividad(id):
                     'nombre': foto.nombre_archivo
                 })
     
-        comentarios_db = db2.get_comentarios_por_actividad_id(actividad_db.id)
-        comentarios = []
-        for comentario in comentarios_db:
-            if comentario:
-                comentarios.append({
-                    'id': comentario.id,
-                    'nombre': comentario.nombre,
-                    'texto': comentario.texto,
-                    'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S')
-                })
-
+       
         contacto_db = db2.get_contactar_por_actividad_id(actividad_db.id)
         contacto = []
         for c in contacto_db:
@@ -292,7 +264,6 @@ def actividad(id):
             'contacto': contacto,
             'temas': temas,
             'fotos': fotos,
-            'comentarios': comentarios
         }
         return render_template('actividad.html', actividad = actividad)
 
@@ -300,6 +271,51 @@ def actividad(id):
 def estadisticas():
 
     return render_template('estadisticas.html')
+
+@app.route("/obtener_comentarios", methods=['POST'])
+@cross_origin(origin="127.0.0.1", supports_credentials=True)
+def obtener_comentarios():
+    print("Obteniendo comentarios")
+    data = request.get_json()
+    print(data)
+    actividad_id = data.get('actividad_id')
+    comentarios_db = db2.get_comentarios_por_actividad_id(actividad_id)
+    comentarios = []
+    for comentario in comentarios_db:
+        if comentario:
+            comentarios.append({
+                'id': comentario.id,
+                'nombre': comentario.nombre,
+                'texto': comentario.texto,
+                'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S')
+            })
+    return jsonify(comentarios)
+
+@app.route("/agregar_comentario", methods=['POST'])
+@cross_origin(origin="127.0.0.1", supports_credentials=True)
+def agregar_comentario():
+    errores = []
+    if request.method == 'POST':
+        print("Agregando comentario")
+        data = request.get_json()
+        print(data)
+        actividad_id = data.get('actividad_id')
+        print(actividad_id)
+        nombre = data.get('nombre')
+        texto = data.get('texto')
+        fecha = datetime.now()
+        if not validate_nombre_comentario(nombre):
+            errores.append('Nombre inválido (3-80 caracteres)[SERVER]')
+            return jsonify({'errores': errores}), 200
+        if not validate_texto_comentario(texto):
+            errores.append('Texto inválido (mínimo 5 caracteres y máximo 1000)[SERVER]')
+            return jsonify({'errores': errores}), 200
+        
+        db2.add_comentario(actividad_id, nombre, texto, fecha)
+        print("Comentario agregado")
+        return jsonify({'success': 'Comentario agregado exitosamente'}), 200
+    return jsonify({'errores': errores}), 200
+    
 
 @app.route("/obtener_stats", methods=['GET'])
 @cross_origin(origin="127.0.0.1", supports_credentials=True)

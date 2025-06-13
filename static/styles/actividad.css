@@ -10,3 +10,7 @@ div.comentario {
 form div.form-group {
     margin-bottom: 10px;
 }
+
+#val-box {
+    background-color: indianred;
+}
