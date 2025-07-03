@@ -301,6 +301,11 @@ def estadisticas():
 
     return render_template('estadisticas.html')
 
+@app.route("/actividad_notas", methods=['GET'])
+def actividad_notas():
+    return render_template('actividad_notas.html')
+
+
 @app.route("/obtener_stats", methods=['GET'])
 @cross_origin(origin="127.0.0.1", supports_credentials=True)
 def obtener_stats():

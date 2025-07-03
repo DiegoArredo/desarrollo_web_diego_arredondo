@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Actividades realizadas con nota{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+{% endblock %}
+{% block content %}
+<h1>Actividades con notas</h1>
+<p>Esta página muestra las distintas actividades y sus notas respectivas</p>
+<section>
+    <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Fecha Inicio</th>
+      <th>Sector</th>
+      <th>Nombre</th>
+      <th>Tema</th>
+      <th>nota</th>
+      <th>nota</th>
+    </tr>
+  </thead>
+  <tbody id="actividades-tbody">
+
+  </tbody>
+    </table>
+    
+</section>
+<a href="{{ url_for('home') }}" class="btn">Volver al Inicio</a>
+
+{% endblock %}
+{% block js %}
+<script src="{{url_for('static', filename='js/actividad_notas.js')}}"></script>
+<script>
+    // Ejemplo data:{
+//   "notas": [
+//     [3,6,7]
+//   ],
+//   "actividadTemas": [
+//     {
+//       "id": 2,
+//       "tema": "otro",
+//       "glosaOtro": "Prueba",
+//       "actividadId": 6
+//     }
+//   ],
+//   "actividades": [
+//     {
+//       "id": 6,
+//       "nombre": "Diego ",
+//       "sector": "Villa el Huaso",
+//       "diaHoraInicio": "2025-05-23T18:45:00"
+//     }
+//   ]
+// }
+
+    fetch(("http://127.0.0.1:8080/actividad_notas"))
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        // Agregar a la tabla los datos de las actividades
+        const tbody = document.getElementById('actividades-tbody');
+        data.actividades.forEach(actividad => {
+            const promedio_notas = data.notas.forEach(notas => {
+                return notas.reduce((a, b) => a + b, 0) / notas.length;
+            });
+            const tema = data.actividadTemas.find(t => t.actividadId === actividad.id);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${actividad.id}</td>
+                <td>${new Date(actividad.diaHoraInicio).toLocaleDateString()}</td>
+                <td>${actividad.sector}</td>
+                <td>${actividad.nombre}</td>
+                <td>${tema ? tema.tema : 'N/A'}</td>
+                <td>${promedio_notas ? promedio_notas.toFixed(2) : '-'}</td>
+                <td><a href="#" class="evaluar-link" data-actividad-id="${actividad.id}">Evaluar</a></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching actividades:', error);
+        alert('Error al cargar las actividades. Por favor, inténtelo de nuevo más tarde.');
+
+    })
+
+</script>
+{% endblock %}
