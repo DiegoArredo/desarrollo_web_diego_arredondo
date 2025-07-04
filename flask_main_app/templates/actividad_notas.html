@@ -2,86 +2,144 @@
 {% block title %}Actividades realizadas con nota{% endblock %}
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+
 {% endblock %}
 {% block content %}
 <h1>Actividades con notas</h1>
 <p>Esta página muestra las distintas actividades y sus notas respectivas</p>
-<section>
+<h3 id="success-msg" hidden>°</h3>
+<div>
     <table>
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Fecha Inicio</th>
-      <th>Sector</th>
-      <th>Nombre</th>
-      <th>Tema</th>
-      <th>nota</th>
-      <th>nota</th>
-    </tr>
-  </thead>
-  <tbody id="actividades-tbody">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha Inicio</th>
+                <th>Sector</th>
+                <th>Nombre</th>
+                <th>Tema</th>
+                <th>Nota</th>
+                <th>Evaluar (1 al 7)</th>
+            </tr>
+        </thead>
+        <tbody id="actividades-tbody">
 
-  </tbody>
+        </tbody>
     </table>
-    
-</section>
+
+</div>
 <a href="{{ url_for('home') }}" class="btn">Volver al Inicio</a>
 
 {% endblock %}
 {% block js %}
-<script src="{{url_for('static', filename='js/actividad_notas.js')}}"></script>
 <script>
-    // Ejemplo data:{
-//   "notas": [
-//     [3,6,7]
-//   ],
-//   "actividadTemas": [
-//     {
-//       "id": 2,
-//       "tema": "otro",
-//       "glosaOtro": "Prueba",
-//       "actividadId": 6
-//     }
-//   ],
-//   "actividades": [
-//     {
-//       "id": 6,
-//       "nombre": "Diego ",
-//       "sector": "Villa el Huaso",
-//       "diaHoraInicio": "2025-05-23T18:45:00"
-//     }
-//   ]
-// }
 
-    fetch(("http://127.0.0.1:8080/actividad_notas"))
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        // Agregar a la tabla los datos de las actividades
-        const tbody = document.getElementById('actividades-tbody');
-        data.actividades.forEach(actividad => {
-            const promedio_notas = data.notas.forEach(notas => {
-                return notas.reduce((a, b) => a + b, 0) / notas.length;
+    function evaluarActividad(actividadId) {
+        // Ocultar el mensaje de éxito si está visible!
+        const successMsg = document.getElementById("success-msg");
+        successMsg.hidden = true;
+
+        const evalLink = document.getElementById(`e-${actividadId}`);
+        evalLink.style.display = 'none'; // Ocultar el enlace de evaluación
+        const miniForm = document.createElement('form');
+        // console.log("creando el form");
+        miniForm.id = `form-eval-${actividadId}`;
+        miniForm.method = 'POST';
+        miniForm.innerHTML = `
+            <label for="nota-${actividadId}">Nota:</label>
+            <input type="number" id="nota-${actividadId}" name="nota" min="1" max="7" value="7"  required>
+            <button type="button" onclick="agregarNota(${actividadId})" >Enviar</button>
+        `;
+        evalLink.insertAdjacentElement('afterend', miniForm);
+        console.log("agregando el form");
+
+    };
+
+    function agregarNota(actividadId) {
+        const idActividad = parseInt(actividadId);
+        const notaInput = document.getElementById(`nota-${actividadId}`);
+        const nota = parseInt(notaInput.value);
+        if (isNaN(nota) || nota < 1 || nota > 7) {
+            alert('Por favor, ingrese una nota válida entre 1 y 7.');
+            return;
+        }
+        if (isNaN(idActividad)) {
+            alert('ID de actividad inválido. Error interno.');
+            return;
+        }
+        fetch(("http://127.0.0.1:8080/actividad_notas"), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "actividadId": idActividad,"nota": nota})
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // console.log(data.message);
+                // console.log(data.success);
+                // console.log(data.error);
+                if (data.success) {
+                    const successMsg = document.getElementById("success-msg");
+                    successMsg.innerText = data.message;
+                    successMsg.hidden = false;
+                    successMsg.style.backgroundColor = 'green';
+                    const tbody = document.getElementById("actividades-tbody");
+                    tbody.innerHTML = '';
+                    obtenerActividadNotas();
+                } else {
+                    alert("Error al agregar la nota!");
+                }
+            })
+            .catch(error => {
+                console.error("Error al agregar la nota:", error);
+                alert('Error al agregar la nota. Por favor, inténtelo de nuevo más tarde.');
             });
-            const tema = data.actividadTemas.find(t => t.actividadId === actividad.id);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
+    };
+</script>
+<script>
+    // Función para obtener las actividades y sus notas
+    function obtenerActividadNotas() {
+        fetch(("http://127.0.0.1:8080/actividad_notas"))
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Agregar a la tabla los datos de las actividades segun lo que se recibe de la api
+                const tbody = document.getElementById('actividades-tbody');
+                for (let i = 0; i < data.actividades.length; i++) {
+                    console.log(data.actividades[i]);
+                    console.log(data.notas[i]);
+                    console.log(data.actividadTemas[i]);
+                    const actividad = data.actividades[i];
+                    console.log("larfo notas: ", data.notas[i].length);
+                    var promedio_notas ="-";
+                    if (data.notas[i] && data.notas[i].length) {
+                        var suma_notas = 0;
+                        for (let j = 0; j < data.notas[i].length; j++) {
+                            suma_notas += data.notas[i][j].nota;
+                        }
+                        
+                        promedio_notas = suma_notas / data.notas[i].length;
+                    }
+                    const tema = data.actividadTemas[i];
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
                 <td>${actividad.id}</td>
                 <td>${new Date(actividad.diaHoraInicio).toLocaleDateString()}</td>
                 <td>${actividad.sector}</td>
                 <td>${actividad.nombre}</td>
                 <td>${tema ? tema.tema : 'N/A'}</td>
-                <td>${promedio_notas ? promedio_notas.toFixed(2) : '-'}</td>
-                <td><a href="#" class="evaluar-link" data-actividad-id="${actividad.id}">Evaluar</a></td>
+                <td>${promedio_notas}</td>
+                <td><a href="#" id="e-${actividad.id}" onclick="evaluarActividad(${actividad.id})" class="btn" >Evaluar</a></td>
             `;
-            tbody.appendChild(tr);
-        });
-    })
-    .catch(error => {
-        console.error('Error fetching actividades:', error);
-        alert('Error al cargar las actividades. Por favor, inténtelo de nuevo más tarde.');
+                    tbody.appendChild(tr);
+                };
+            })
+            .catch(error => {
+                console.error('Error fetching actividades:', error);
+                alert('Error al cargar las actividades. Por favor, inténtelo de nuevo más tarde.');
 
-    })
+            })
+    }
+    obtenerActividadNotas();
 
 </script>
 {% endblock %}
