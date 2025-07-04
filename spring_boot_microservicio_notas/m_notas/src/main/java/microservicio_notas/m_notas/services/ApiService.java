@@ -41,7 +41,7 @@ public class ApiService {
         return notaRepository.findNotaByActividadId(actividadId);
     }
 
-    public void addActividadNota(Integer actividadId, Integer notaId) {
+    public void addActividadNota(Integer actividadId, Integer notaValue) {
         
         try {
             // Validar que la actividad exista y la fecha de inicio sea menor a la fecha actual
@@ -52,7 +52,7 @@ public class ApiService {
             if (actividad.getDiaHoraInicio().isAfter(java.time.LocalDateTime.now())) {
                 throw new IllegalArgumentException("La fecha de inicio de la actividad debe ser menor a la fecha actual.");
             };
-            Nota nota = new Nota(actividadId, notaId);
+            Nota nota = new Nota(actividadId, notaValue);
             nota.validateNota(); // Validar con la funcion que esta en la clase Nota!
             notaRepository.save(nota);
             System.out.println("Nota agregada correctamente!");
