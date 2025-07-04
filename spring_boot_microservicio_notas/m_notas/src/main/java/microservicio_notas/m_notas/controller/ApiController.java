@@ -30,8 +30,9 @@ public class ApiController {
     // Se define Map<String, Object>, Object para encampsular el tipo List y el tipo ArrayList
     public Map<String, Object> getActividadNotas() {
 
-        // Obtener todas las actividades.
-        List<Actividad> actividades = apiService.getAllActividades();
+        // Obtener todas las actividades que tienen fecha de inicio anterior a la actual.
+
+        List<Actividad> actividades = apiService.getAllActividadesAlreadyStarted();
         // Aca para inicializar las listas de notas y actividadTema
         ArrayList<List<Nota>> notasPorActividad = new ArrayList<>();
         ArrayList<ActividadTema> actividadTemas = new ArrayList<>();

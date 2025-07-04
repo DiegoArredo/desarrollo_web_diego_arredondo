@@ -31,6 +31,13 @@ public class ApiService {
         return actividadRepository.findAll();
     }
 
+    public List<Actividad> getAllActividadesAlreadyStarted() {
+        // Obtener todas las actividades que tienen fecha de inicio anterior a la actual.
+        List<Actividad> actividades = actividadRepository.findAll();
+        return actividades.stream()
+                .filter(actividad -> actividad.getDiaHoraInicio().isBefore(java.time.LocalDateTime.now()))
+                .toList();
+    }
     // Obtener el tema de una actividad por su id
     public ActividadTema getTemaByActividadId(Integer actividad_id) {
         return actividadTemaRepository.findTemaByActividadId(actividad_id);
